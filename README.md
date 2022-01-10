@@ -4,6 +4,9 @@ The basic web application allows multiple participants to share and see others' 
 The web server acts as signaling server. Signaling happens using https requests. No websokets are used.
 Each participant maintains n-1  [RTCPeerConnection](https://developer.mozilla.org/en-US/docs/Web/API/RTCPeerConnection) in their user agent. For n participants, the server maintains only n records.
 
+![ScreenShot](https://i.stack.imgur.com/Fo2XW.png)
+
+
 ### To get started:
 
 - Download and extract the project.
