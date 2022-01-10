@@ -37,7 +37,7 @@
            <configuration>
              <!--port>8080</port -->
              <httpsPort>8443</httpsPort>
-             <keystoreFile>E:\Videomeeting\keys.keystore</keystoreFile>
+             <keystoreFile>E:\keys.jks</keystoreFile>
              <keystorePass>mypass</keystorePass>
             </configuration>
           </plugin>
