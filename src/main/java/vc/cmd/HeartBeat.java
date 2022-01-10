@@ -2,8 +2,8 @@ package vc.cmd;
 
 import vc.MeetSessions;
 import vc.MeetSessions.Handler;
-import vc.MeetSessions.MeetConnection;
-import vc.MeetSessions.MeetSession;
+import vc.MeetConnection;
+import vc.MeetSession;
 
 public class HeartBeat extends Handler {
 
@@ -18,7 +18,8 @@ public class HeartBeat extends Handler {
 			session.notifyAlive();
 			synchronized (sessions) {
 				for (MeetSession missingSession : sessions.connectionsMissingToWhatSession(session)) {
-					MeetConnection c = sessions.new MeetConnection(session, missingSession);
+					MeetConnection c = new MeetConnection(session, missingSession);
+					sessions.addOffererAnswererConnection(c);
 					session.addMessage("CREATE_OFFER:" + c.getAnswerer().getSessionId());
 				}
 			}

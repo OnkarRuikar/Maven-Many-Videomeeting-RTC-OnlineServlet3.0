@@ -30,6 +30,17 @@
 					<artifactId>maven-war-plugin</artifactId>
 					<version>3.1.0</version>
 				</plugin>
+				 <plugin>
+           <groupId>org.apache.tomcat.maven</groupId>
+           <artifactId>tomcat7-maven-plugin</artifactId>
+           <version>2.2</version>
+           <configuration>
+             <!--port>8080</port -->
+             <httpsPort>8443</httpsPort>
+             <keystoreFile>E:\Videomeeting\keys.keystore</keystoreFile>
+             <keystorePass>mypass</keystorePass>
+            </configuration>
+          </plugin>
 			</plugins>
 		</pluginManagement>
 	</build>

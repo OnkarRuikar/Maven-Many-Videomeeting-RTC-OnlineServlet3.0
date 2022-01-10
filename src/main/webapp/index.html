@@ -1,42 +1,42 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>Plain webRTC</title>
-<style type="text/css">
-.sent {
-	color: blue;
-}
 
-button {
-	display: block;
-}
-</style>
+<head>
+	<!-- no caching in dev mode -->
+	<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="0" />
+
+	<link rel="shortcut icon" href="favicon.ico">
+	<link rel="stylesheet" href="styles.css">
+	<script type="module" src="script.js"></script>
+	<title>Plain webRTC</title>
 </head>
+
 <body>
+	<!--To address Chrome autoplay policy https://developer.chrome.com/blog/autoplay/ -->
+	<div class='overlay'>
+		<button>Start meeting?</button>
+	</div>
+
 	<h1>Video Chatroom</h1>
-	<script src="room.js"></script>
-	<script type="text/javascript">
-		var m = new Room("stun:stun.l.google.com:19302");
-		m.addOnSessionIncomming(function(sessionId, oleRecipient) {
-			var v = document.createElement('video');
-			v.setAttribute('id', 'v' + sessionId)
-			v.setAttribute('width', 250);
-			v.setAttribute('autoplay', '');
-			v.setAttribute('title', sessionId);
-			v.setAttribute('style', 'border:1px solid black;');
-			document.body.appendChild(v);
-			oleRecipient.addOnStreamEventsChangedHandler(function(streamEvents){
-				console.log(streamEvents);
-				v.srcObject = streamEvents[0].stream;
-			})
-		});
-		m.addOnSessionOutgoing(sessionId=>{
-			console.log("outgoing:",sessionId);
-			var v = document.getElementById('v'+sessionId);
-			v.remove();
-		});
-	</script>
-	Click <a href="meet" target="_blank">here</a> to open statistics in a new tab.
+	<div id='sessionId'></div>
+	<p>Click <a href="meet" target="_blank">here</a> to open statistics in a new tab.</p>
+
+	<div id="localView">
+		<p>Your view</p>
+		<video id="localVideo" autoplay title="Your webcam"></video>
+	</div>
+
 	<p>Here are the opposite audio/video-streams: </p>
+	<div class="allVideos"></div>
+
+	<template id="remoteViewTemplate">
+		<div class="remoteView">
+			<p class="sessionId">id</p>
+			<video class="remoteVideo" autoplay title="Remote webcam"></video>
+		</div>
+	</template>
 </body>
+
 </html>

@@ -8,8 +8,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import vc.MeetSessions.MeetSession;
-
 @WebServlet(urlPatterns = "/meet", name = "meetServlet")
 public class MeetServlet extends HttpServlet {
 
@@ -19,6 +17,7 @@ public class MeetServlet extends HttpServlet {
 	}
 
 	private final MeetSessions sessions = new MeetSessions();
+
 	private Thread removeOldSessionsThread = new Thread(() -> {
 		while (!Thread.currentThread().isInterrupted()) {
 			try {
@@ -28,7 +27,8 @@ public class MeetServlet extends HttpServlet {
 				break;
 			}
 			try {
-				sessions.removeSessionsOlderThan(System.currentTimeMillis() - 2_000);
+				//need bigger timeout. 2sec is too short.
+				sessions.removeSessionsOlderThan(System.currentTimeMillis() - 10_000);
 			} catch (Exception e) {
 				e.printStackTrace(System.err);
 			}

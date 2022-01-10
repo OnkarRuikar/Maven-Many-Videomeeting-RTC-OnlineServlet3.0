@@ -1,0 +1,91 @@
+/*overlay styles*/
+.overlay {
+ position: fixed;
+ top: 0;
+ bottom: 0;
+ left: 0;
+ right: 0;
+ z-index: 100;
+ background-color: lightcyan;
+}
+.overlay > button {
+ position: absolute;
+ top: 50%;
+ left: 50%;
+ transform: translate(-50%, -50%);
+
+ background-color: rgb(241, 162, 162);
+ height: 2.5rem;
+ font-weight: bold;
+}
+
+.sent {
+ color: blue;
+}
+
+button {
+ display: block;
+}
+
+/* show session info on top right*/
+#sessionId {
+ position: fixed;
+ right: 2rem;
+ top: 2rem;
+ background-color: wheat;
+}
+
+/* local video */
+#localView {
+ position: fixed;
+ right: 1rem;
+ bottom: 1rem;
+ background-color: lightblue;
+ border: 2px solid;
+ border-radius: 0.5rem;
+ overflow: hidden;
+}
+
+#localView > p {
+ font-size: 1rem;
+ font-weight: bolder;
+ margin: 0 auto;
+ text-align: center;
+}
+
+#localVideo {
+ display: block;
+ margin: 0;
+ height: 125px;
+}
+
+/* remote videos*/
+.remoteView {
+ display: inline-block;
+ width: 250px;
+ overflow: hidden;
+ background-color: lightgreen;
+ border: 1px solid;
+ border-radius: 0.5rem;
+}
+
+.remoteView > p {
+ font-size: 1rem;
+ margin: 0 auto;
+ text-align: center;
+ text-overflow: ellipsis;
+}
+
+.remoteVideo {
+ display: block;
+ margin: 0;
+ width: 250px;
+ height: 187px;
+}
+
+.allVideos {
+ width: 100vw;
+ height: auto;
+ border: 1px dotted brown;
+ background-color: #aaa;
+}

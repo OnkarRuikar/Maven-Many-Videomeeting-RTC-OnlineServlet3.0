@@ -15,47 +15,6 @@ import vc.cmd.OfferSDP;
 import vc.cmd.RequestSession;
 
 public class MeetSessions {
-	public class MeetConnection {
-		private final MeetSession offerer;
-		private final MeetSession answerer;
-		private String offeredSDP;
-		private String answeredSDP;
-
-		public MeetConnection(MeetSession offerer, MeetSession answerer) {
-			this.offerer = offerer;
-			this.answerer = answerer;
-			offererAnswererConnection.add(this);
-		}
-
-		public MeetSession getOfferer() {
-			return offerer;
-		}
-
-		public MeetSession getAnswerer() {
-			return answerer;
-		}
-
-		public String getOfferedSDP() {
-			return offeredSDP;
-		}
-
-		public void setOfferedSDP(String offererSDP) {
-			this.offeredSDP = offererSDP;
-		}
-
-		public String getAnsweredSDP() {
-			return answeredSDP;
-		}
-
-		public void setAnsweredSDP(String answererSDP) {
-			this.answeredSDP = answererSDP;
-		}
-
-		public String getDebugInfo() {
-			return "FROM " + offerer.getSessionId() + " to " + answerer.getSessionId() + " (offeredSDP:"
-					+ (offeredSDP != null) + ", answeredSDP:" + (answeredSDP != null) + ")";
-		}
-	}
 
 	private Set<MeetSession> sessions = new LinkedHashSet<>();
 	private List<Handler> registry = Arrays.asList(new RequestSession(this), new Answer(this), new HeartBeat(this),
@@ -71,7 +30,7 @@ public class MeetSessions {
 		synchronized (sessions) {
 			Set<UUID> usedIds = new LinkedHashSet<UUID>();
 			for (MeetSession meetSession : sessions) {
-				usedIds.add(meetSession.id);
+				usedIds.add(meetSession.getSessionId());
 			}
 			UUID newRandomUUID = UUID.randomUUID();
 			while (usedIds.contains(newRandomUUID)) {
@@ -90,7 +49,7 @@ public class MeetSessions {
 		UUID requestedSession = UUID.fromString(requestedSessionId);
 		synchronized (sessions) {
 			for (MeetSession session : sessions) {
-				if (session.id.equals(requestedSession)) {
+				if (session.getSessionId().equals(requestedSession)) {
 					return session;
 				}
 			}
@@ -114,50 +73,15 @@ public class MeetSessions {
 		return onOutgoingBrowserTabHandlers.remove(handler);
 	}
 
-	public class MeetSession {
-		private final UUID id;
-
-		private Set<String> messages = new LinkedHashSet<>();
-
-		private long lastAliveSign = System.currentTimeMillis();
-
-		private MeetSession(UUID id) {
-			this.id = id;
-		}
-
-		public UUID getSessionId() {
-			return id;
-		}
-
-		public void notifyAlive() {
-			lastAliveSign = System.currentTimeMillis();
-		}
-
-		public Set<String> copyMessageQueueAndClear() {
-			synchronized (messages) {
-				Set<String> tmpMsgs = new LinkedHashSet<>(messages);
-				messages.clear();
-				return tmpMsgs;
-			}
-		}
-
-		public void addMessage(String message) {
-			messages.add(message);
-		}
-
-		public long getLastAliveSign() {
-			return lastAliveSign;
-		}
-	}
-
 	public void removeSessionsOlderThan(long tooOldTimestamp) {
-		Set<MeetSession> tooOldSessions = new LinkedHashSet<MeetSessions.MeetSession>();
+		Set<MeetSession> tooOldSessions = new LinkedHashSet<MeetSession>();
 		if (sessions.isEmpty()) {
 			return;
 		}
 		synchronized (sessions) {
 			for (MeetSession meetSession : sessions) {
 				if (meetSession.getLastAliveSign() <= tooOldTimestamp) {
+					System.out.println("tooOld: " + meetSession.getSessionId());
 					tooOldSessions.add(meetSession);
 				}
 			}
@@ -172,9 +96,9 @@ public class MeetSessions {
 			sessions.removeAll(tooOldSessions);
 		}
 		synchronized (offererAnswererConnection) {
-			Set<MeetConnection> removeConnections = new LinkedHashSet<MeetSessions.MeetConnection>();
+			Set<MeetConnection> removeConnections = new LinkedHashSet<MeetConnection>();
 			for (MeetConnection connection : offererAnswererConnection) {
-				if (tooOldSessions.contains(connection.answerer) || tooOldSessions.contains(connection.offerer)) {
+				if (tooOldSessions.contains(connection.getAnswerer()) || tooOldSessions.contains(connection.getOfferer())) {
 					removeConnections.add(connection);
 				}
 			}
@@ -188,8 +112,8 @@ public class MeetSessions {
 			if (meetSession != fromWho) {
 				boolean existing = false;
 				for (MeetConnection meetConnection : offererAnswererConnection) {
-					boolean leftToRight = meetConnection.answerer == fromWho && meetConnection.offerer == meetSession;
-					boolean rightToLeft = meetConnection.answerer == meetSession && meetConnection.offerer == fromWho;
+					boolean leftToRight = meetConnection.getAnswerer() == fromWho && meetConnection.getOfferer() == meetSession;
+					boolean rightToLeft = meetConnection.getAnswerer() == meetSession && meetConnection.getOfferer() == fromWho;
 					if (leftToRight | rightToLeft) {
 						existing = true;
 						break;
@@ -258,4 +182,8 @@ public class MeetSessions {
 		}
 		throw new RuntimeException("Expected one handler candidate but got " + candidates.size());
 	};
+
+	public void addOffererAnswererConnection(MeetConnection mc){
+		this.offererAnswererConnection.add(mc);
+	}
 }
